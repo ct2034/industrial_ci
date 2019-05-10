@@ -187,12 +187,17 @@ if [ "${COVERAGE_PKGS// }" != "" ]; then
     catkin build
     for pkg in $COVERAGE_PKGS; do
         echo "Creating coverage for [$pkg]"
+        pwd
         catkin build $pkg -v --no-deps --catkin-make-args ${pkg}_coverage
-        coveralls-lcov --repo-token=geXAmDzGpB0o0rIZPN87bCiXSio6pC0aM /root/catkin_ws/build/$pkg/${pkg}_coverage.info
+        cd $TARGET_REPO_PATH
+        lcov --extract /root/catkin_ws/build/$pkg/${pkg}_coverage.info '/root/catkin_ws/src/*' > /root/catkin_ws/build/$pkg/${pkg}_coverage_cleaned.info
+        coveralls-lcov --repo-token=geXAmDzGpB0o0rIZPN87bCiXSio6pC0aM /root/catkin_ws/build/$pkg/${pkg}_coverage_cleaned.info
     done
 
     ici_time_end
 fi
+
+exit
 
 
 #sudo gem install coveralls-lcov
