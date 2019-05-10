@@ -177,18 +177,21 @@ if [ "$CATKIN_LINT" == "true" ] || [ "$CATKIN_LINT" == "pedantic" ]; then
     ici_time_end  # catkin_lint
 fi
 
-ici_time_start catkin_coverage
+# create coverage reports
+if [ "${COVERAGE_PKGS// }" != "" ]; then
+    ici_time_start catkin_coverage
 
-catkin config --cmake-args -DENABLE_COVERAGE_TESTING=ON -DCMAKE_BUILD_TYPE=Debug
-catkin build
-catkin build prbt_hardware_support -v --no-deps --catkin-make-args prbt_hardware_support_coverage
+    catkin config --cmake-args -DENABLE_COVERAGE_TESTING=ON -DCMAKE_BUILD_TYPE=Debug
+    catkin build
+    for pkg in $COVERAGE_PKGS; do
+        echo "Creating coverage for [$pkg]"
+        catkin build $pkg -v --no-deps --catkin-make-args ${pkg}_coverage
+        cp /root/catkin_ws/build/$pkg/${pkg}_coverage.info /tmp/coverage_results/${pkg}_coverage.info
+    done
 
-ici_time_end
+    ici_time_end
+fi
 
-ici_time_start copy_results
-cp /root/catkin_ws/build/prbt_hardware_support/prbt_hardware_support_coverage.info /tmp/coverage_results/prbt_hardware_support_coverage.info
-
-ici_time_end
 
 #sudo gem install coveralls-lcov
 #cd /root/catkin_ws/src/pilz_robots
