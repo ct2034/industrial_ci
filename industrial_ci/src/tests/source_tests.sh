@@ -192,10 +192,10 @@ if [ "${COVERAGE_PKGS// }" != "" ]; then
         echo "---------------------------------------------------"
         line_perc=$(lcov --summary /root/catkin_ws/build/$pkg/${pkg}_coverage_cleaned.info 2>&1 | grep -o "lines\.*: [0-9.]*" | grep -o "[0-9.]\+$")
 
-        if [ "$line_perc" -lt "100" ]; then
-            error "coverage of lines: $line_perc\% < 100\% - exiting"
+        if (( $(echo "$line_perc < 100.0" |bc -l) )); then
+            error "line coverage: $line_perc% < 100% - exiting"
         else
-            echo "coverage 100%"
+            echo "line coverage 100%"
         fi
     done
 
