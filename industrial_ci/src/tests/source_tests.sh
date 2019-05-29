@@ -181,6 +181,9 @@ fi
 if [ "${COVERAGE_PKGS// }" != "" ]; then
     ici_time_start catkin_coverage
 
+    # required to compare floats for the output below
+    sudo apt-get install -qq -y bc
+
     catkin config --cmake-args -DENABLE_COVERAGE_TESTING=ON -DCMAKE_BUILD_TYPE=Debug
     catkin build
     for pkg in $COVERAGE_PKGS; do
