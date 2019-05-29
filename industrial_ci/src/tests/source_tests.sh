@@ -185,13 +185,18 @@ if [ "${COVERAGE_PKGS// }" != "" ]; then
     catkin build
     for pkg in $COVERAGE_PKGS; do
         echo "Creating coverage for [$pkg]"
-        pwd
         catkin build $pkg -v --no-deps --catkin-make-args ${pkg}_coverage
         cd $TARGET_REPO_PATH
-        lcov --extract /root/catkin_ws/build/$pkg/${pkg}_coverage.info '/root/catkin_ws/src/*' > /root/catkin_ws/build/$pkg/${pkg}_coverage_cleaned.info
         echo "Coverage summary for $pkg ----------------------"
-        lcov --summary /root/catkin_ws/build/$pkg/${pkg}_coverage_cleaned.info
+        lcov --extract /root/catkin_ws/build/$pkg/${pkg}_coverage.info '/root/catkin_ws/src/*' > /root/catkin_ws/build/$pkg/${pkg}_coverage_cleaned.info
         echo "---------------------------------------------------"
+        line_perc=$(lcov --summary /root/catkin_ws/build/$pkg/${pkg}_coverage_cleaned.info 2>&1 | grep -o "lines\.*: [0-9.]*" | grep -o "[0-9.]\+$")
+
+        if [ "$line_perc" -lt "100" ]; then
+            error "coverage of lines: $line_perc\% < 100\% - exiting"
+        else
+            echo "coverage 100%"
+        fi
     done
 
     ici_time_end
