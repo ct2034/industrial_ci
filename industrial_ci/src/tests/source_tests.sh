@@ -181,8 +181,6 @@ fi
 if [ "${COVERAGE_PKGS// }" != "" ]; then
     ici_time_start catkin_coverage
 
-    gem install coveralls-lcov
-
     catkin config --cmake-args -DENABLE_COVERAGE_TESTING=ON -DCMAKE_BUILD_TYPE=Debug
     catkin build
     for pkg in $COVERAGE_PKGS; do
@@ -191,7 +189,9 @@ if [ "${COVERAGE_PKGS// }" != "" ]; then
         catkin build $pkg -v --no-deps --catkin-make-args ${pkg}_coverage
         cd $TARGET_REPO_PATH
         lcov --extract /root/catkin_ws/build/$pkg/${pkg}_coverage.info '/root/catkin_ws/src/*' > /root/catkin_ws/build/$pkg/${pkg}_coverage_cleaned.info
-        coveralls-lcov --repo-token=geXAmDzGpB0o0rIZPN87bCiXSio6pC0aM /root/catkin_ws/build/$pkg/${pkg}_coverage_cleaned.info
+        echo "Coverage summary for $pkg ----------------------"
+        lcov --summary /root/catkin_ws/build/$pkg/${pkg}_coverage_cleaned.info
+        echo "---------------------------------------------------"
     done
 
     ici_time_end
